@@ -95,36 +95,5 @@ end
 
 
 
-M.load_unicode_data("data/UnicodeData.txt")
-local s =[[
-    Lidé mohou být nově na veřejnosti až v desetičlenné skupině, od pondělí se otevřou vysoké školy, nové pacienty také mohou začít přijímat lázně. Ministr zdravotnictví Adam Vojtěch ve čtvrtek večer po jednání vlády představil, jaká opatření, které byly přijaty kvůli šíření koronaviru, nově uvolní.
-    ilustrační snímek
-
-    ilustrační snímek | foto:  Michal Růžička, MAFRA
-    1Volný pohyb
-
-    Vláda od pátku ruší zákaz volného pohybu osob. Epidemiologická situace v Česku podle ministra Vojtěcha umožňuje, aby došlo k uvolnění restrikcí.
-    2Vysoké školy
-
-    Od pondělí se otevřou vysoké školy pro všechny studenty. „V krizovém opatření se od 27. dubna umožňuje účast ve všech ročnících vysokých škol, už to není pouze ten poslední, jak to bylo definováno původně,“ řekl ministr.
-    3Cestování do zahraničí
-
-    Po uvolnění zákazu volného pohybu osob bude opět možné cestovat do zahraničí. Při návratu bude dál nutný negativní test nebo karanténa.
-    4Lázně
-
-    Lázně mohou začít za určitých podmínek přijímat pacienty do léčebně-rehabilitační péče. Ministerstvo zdravotnictví to povolilo mimořádným opatřením.
-    5Zdravotnictví
-
-    Kraje budou muset nově zajistit pro seniory s nemocí covid-19 pouze deset volných lůžek na 100 000 obyvatel. Dosud to bylo 60 lůžek. Hejtmanům vadilo to, že opatření je plošné a nerespektuje podle nich reálné potřeby jednotlivých krajů.
-
-    Zdroj: https://www.idnes.cz/zpravy/domaci/koronavirus-opatreni-uvolnovani-prehledne-vysoke-skoly-cestovani-volny-pohyb.A200423_222347_domaci_aug
-]]
-
-local words = M.tokenize(s)
-print(table.concat(words, " "))
--- for _, code in utf8.codes(s) do
---   local info = M.char_info(code)
---   print(info[2], info[6], utf8.char(M.lower_case(M.get_base_char(code))), utf8.char(code))
--- end
 
 return M
