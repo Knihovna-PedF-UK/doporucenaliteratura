@@ -1,5 +1,7 @@
+-- I've found that we need JS support to download files from SIS. that is really stupid.
+-- I will use Python and Selenium instead, as it can use headless Firefox
 local function scrape(url)
-  local f = io.popen("curl -sS ".. url,"r")
+  local f = io.popen("python scrappers/download.py ".. url,"r")
   local result = f:read("*all")
   f:close()
   return result
