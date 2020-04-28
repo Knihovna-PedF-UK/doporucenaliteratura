@@ -15,15 +15,13 @@ function M.get_titles(records)
   for _, rec in ipairs(records) do
     local bibinfo = rec["bib-info"]
     local title, no = bibinfo:match("^(.-)/.+%(%#([0-9]+)")
-    if not title then 
-      title, no = bibinfo:match("^(.-)  .+%(%#([0-9]+)")
+    if not title then print(bibinfo) end
+    if title and not used[no] then
+      local tokenized = tokenizer.tokenize(title,{"Lu", "Ll", "Lt","Nd" } )
+      titles[#titles+1] = {tokenized = tokenized, title = title}
+      -- print(table.concat(tokenized, " "))
+      used[no] = true
     end
-    if not used[no] then
-      local tokenized = tokenizer.tokenize(title)
-      titles[#titles+1] = tokenized
-      print(table.concat(tokenized, " "))
-    end
-    used[no] = true
   end
 end
 
