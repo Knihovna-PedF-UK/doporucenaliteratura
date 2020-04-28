@@ -13,7 +13,7 @@ data/UnicodeData.txt:
 scrape: katedry predmety
 
 katedry: 
-	texlua scrappers/katedry.lua $(pedf_url) data/katedry
+	python scrappers/download.py $(pedf_url) data/katedry
 
 predmety: libs/*
 	@for f in $^; do echo $${f}; done
