@@ -113,8 +113,9 @@ function M.make_index(records)
 end
 
 
-local function search_ngrams(ngram_index, text)
-  local ngrams = make_ngrams(text)
+local function search_ngrams(ngram_index, text )
+  local tokenized = table.concat(tokenize(text))
+  local ngrams = make_ngrams(tokenized)
   local points = 1 / #ngrams
   local found_ids = {}
   for _, w in ipairs(ngrams) do
