@@ -1,4 +1,5 @@
 import os
+from os import path
 import sys
 import time
 
@@ -16,11 +17,16 @@ def process_page(browser, mainurl, link):
     params = parse.parse_qs(parse.urlparse(newurl).query)
     kod = params.get('kod')[0]
     output_file = os.path.join(output_dir+ "/", kod+".html")
+    if path.exists(output_file):
+        # don't overwrite existing files 
+        print("File exits: " + output_file)
+        return False
     print("Saving file: " + output_file)
     f = open(output_file, "w")
     browser.get(newurl)
     f.write(browser.page_source)
     f.close()
+    return True
 
 
 
@@ -37,8 +43,10 @@ try:
         # we need to use only the first one
         current_href = link.get('href')
         if urls.get( current_href ) != True:
-            process_page(browser, url, current_href)
-            time.sleep(15)
+            status = process_page(browser, url, current_href)
+            if status==True:
+                # we don't want to make DOS attack on SIS
+                time.sleep(15)
         urls[current_href] = True
 
 finally:
