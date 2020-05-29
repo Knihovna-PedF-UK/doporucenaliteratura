@@ -15,8 +15,8 @@ scrape: katedry predmety
 katedry: 
 	python scrappers/download.py $(pedf_url) data/katedry
 
-predmety: libs/*
-	@for f in $^; do echo $${f}; done
+predmety: data/katedry/*
+	@for f in $^; do python scrappers/katedry.py $${f} $(pedf_url) $(predmety_dir); done
 
 
 
