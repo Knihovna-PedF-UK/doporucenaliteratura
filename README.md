@@ -27,3 +27,9 @@ Spustíme příkazem
 
 Je třeba mít nainstalované [Selenium pro Python](https://www.selenium.dev/documentation/en/) a [driver pro Firefox](https://github.com/mozilla/geckodriver/releases).
 
+JSON soubory s bibliografickými daty vytvoříme:
+
+    make parse
+    
+Je třeba mít nainstalováno GNU Parallel a [Anystyle CLI](https://anystyle.io/).
+
