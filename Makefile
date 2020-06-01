@@ -21,7 +21,7 @@ predmety: data/katedry/*
 	@for f in $^; do python scrappers/katedry.py $${f} $(pedf_url) $(predmety_dir); done
 
 parse:
-	find $(predmety_dir) -name "*.html" | parallel  --max-args 1 anystyle -f json parse {1} 
+	find $(predmety_dir) -name "*.html" | parallel  --max-args 1 anystyle -f json parse {1} $(citace_dir)
 
 
 
