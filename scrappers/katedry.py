@@ -19,7 +19,10 @@ def get_literatura(source):
     literatura = ""
     for tbl in dom.find_all("table"):
         # find table column with word "Literatura". Insane, I know.
-        bolds = tbl.find("tr").find("td").select("b")
+        try:
+            bolds = tbl.find("tr").find("td").select("b")
+        except:
+            print("Error happened in page parsing")
         if bolds:
             first = bolds[0].contents[0]
             if first == "Literatura":
