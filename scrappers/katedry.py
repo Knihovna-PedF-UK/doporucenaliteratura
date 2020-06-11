@@ -14,6 +14,13 @@ output_dir = sys.argv[3]
 # from https://matix.io/extract-text-from-webpage-using-beautifulsoup-and-python/
 blacklist  =['script']
 
+def br_to_p(td):
+    content = str(td)
+    paragraphs = "</p>\n\n<p>"
+    x = content.replace("<br>", paragraphs).replace("<BR>",paragraphs).replace("<br />",paragraphs).replace("<br/>",paragraphs)
+    return BeautifulSoup(x, "html.parser")
+    
+
 def get_literatura(source):
     dom = BeautifulSoup(source, 'html.parser')
     literatura = ""
@@ -26,6 +33,8 @@ def get_literatura(source):
         if bolds:
             first = bolds[0].contents[0]
             if first == "Literatura":
+                # convert <br> to <p>
+                tbl = br_to_p(tbl)
                 text = tbl.find_all(text=True)
                 for t in text:
                     if t.parent.name not in blacklist:
@@ -42,8 +51,9 @@ def process_page(browser, mainurl, predmet):
     output_file = os.path.join(output_dir+ "/", kod+".html")
     if path.exists(output_file):
         # don't overwrite existing files 
-        print("File exits: " + output_file)
-        return False
+        # print("File exits: " + output_file)
+        # return False
+        pass
     print("Saving file: " + output_file)
     f = open(output_file, "w")
     browser.get(newurl)
@@ -71,6 +81,15 @@ try:
     fireFoxOptions = webdriver.FirefoxOptions()
     fireFoxOptions.headless =  True
     browser = webdriver.Firefox(options=fireFoxOptions)
+    # list of classes to fix
+    if katedry_file == "-x":
+        with open(url) as file_in:
+            for line in file_in:
+                mainurl = "https://is.cuni.cz/studium/predmety/index.php?do=predmet&kod="
+                line = line.replace("\n", "")
+                status = process_page(browser, mainurl, {"kod":line, "url": mainurl + line})
+                time.sleep(10)
+        sys.exit()
     # browser.get(url)
     # mainpage = browser.page_source
     f = open(katedry_file, "r")
@@ -91,6 +110,6 @@ try:
 
 finally:
     try:
-        brower.close()
+        browser.close()
     except:
         pass
