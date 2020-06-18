@@ -21,10 +21,12 @@ local function codehextonum(char)
 end
 
 function M.char_info(codepoint)
+  if not codepoint then return {} end
   local info = parsed_unicodes[codepoint]
   if info then return info end
   info = {}
-  for part in raw_unicodes[codepoint]:gmatch("([^;]*)") do
+  local raw = raw_unicodes[codepoint] or ""
+  for part in raw:gmatch("([^;]*)") do
     info[#info+1] = part
   end
   parsed_unicodes[codepoint] = info

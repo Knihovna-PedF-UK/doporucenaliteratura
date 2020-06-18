@@ -104,8 +104,9 @@ function M.make_index(records)
       update_index(index, newrec, "autor")
       update_index(index, newrec, "vydavatel")
       update_index(index, newrec, "joined_isbn") -- search for isbn without dashes
-      make_tokenized_index(index, newrec, "tokenized_author")
+      make_tokenized_index(index, newrec, "tokenized_autor")
       make_ngram_index(index, newrec, "joined_nazev")
+      make_ngram_index(index, newrec, "joined_autor")
       newrecords[no] = newrec
     end
   end
