@@ -121,6 +121,11 @@ local function find_in_ngrams(index, what)
   return xxx
 end
 
+local function wrong_record(nazev, autor)
+  if nazev == "" or autor == "," or autor == ", Literatura" then 
+    return true 
+  end
+end
 -- find records by name and author
 local function find_names(orig_isbn)
   local rec = isbn_citations[orig_isbn] 
@@ -128,7 +133,7 @@ local function find_names(orig_isbn)
   local autor = get_authors(rec) or ""
   -- don't lookup records without authors and title
   -- they are mostly badly recognized records anyway
-  if nazev == "" or autor == "," or autor == ", Literatura" then 
+  if wrong_record(nazev, autor) then
     return nil 
   end
   local nazev_ids = find_in_ngrams(ngram_nazev, nazev)
@@ -182,7 +187,7 @@ end
 
 -- print found results
 local i = 0
-print("poradi", "isbn", "isbn aleph", "predmetu", "sysno", "signatura", "nazev", "autor")
+print("poradi", "isbn", "isbn aleph", "predmetu", "sysno", "signatura", "nazev", "nazev v citaci", "autor")
 for isbn, count in pairs(isbn_data) do
   local orig_isbn= unprocessed_isbn[isbn]
   local rec = records_isbn[isbn] or find_names(orig_isbn)
@@ -191,14 +196,20 @@ for isbn, count in pairs(isbn_data) do
     i = i + 1
     local curr_isbn = rec.isbn
     if not curr_isbn or curr_isbn == "" then curr_isbn = orig_isbn end
-    print(i, curr_isbn, rec.isbn , count, rec.sysno, rec.signatura,  rec.nazev, rec.autor )
+    local cit_rec = isbn_citations[orig_isbn] 
+    local nazev_cit = flatten_table(cit_rec.title or {}) or ""
+    print(i, curr_isbn, rec.isbn , count, rec.sysno, rec.signatura,  rec.nazev, nazev_cit, rec.autor )
   else
     -- records that haven't been found in aleph
     local rec = isbn_citations[orig_isbn] 
     local nazev = flatten_table(rec.title or {}) or ""
     local autor = get_authors(rec) or ""
     local sysno = rec.sysno or ""
-    print(i, orig_isbn, "",  count, "", sysno, nazev, autor)
+    if orig_isbn:match("no_isbn") and wrong_record(nazev, autor)  then
+      -- don't print empty records
+    else
+      print(i, orig_isbn, "",  count, "", sysno,"",  nazev, autor)
+    end
   end
 end
 
