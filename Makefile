@@ -3,6 +3,7 @@ pedf_url = "https://is.cuni.cz/studium/predmety/index.php?do=ustav&fak=11410&kod
 katedry_dir = data/katedry
 predmety_dir = data/predmety
 citace_dir = data/citace
+full_file = data/pedf_f_komplet.tsv
 
 data/UnicodeData.txt:
 	mkdir -p data
@@ -12,7 +13,7 @@ data/UnicodeData.txt:
 	cp `kpsewhich UnicodeData.txt` data/
 
 
-scrape: katedry predmety
+scrape: katedry predmety isbn
 
 katedry: 
 	python scrappers/download.py $(pedf_url) data/katedry
@@ -23,5 +24,7 @@ predmety: data/katedry/*
 parse:
 	find $(predmety_dir) -name "*.html" | parallel  --max-args 1 anystyle -f json parse {1} $(citace_dir)
 
+isbn:
+	lua bin/search.lua $(full_file) $(citace_dir)/*.json
 
 
