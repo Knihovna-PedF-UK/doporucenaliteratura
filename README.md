@@ -17,7 +17,7 @@ Je třeba pomocí obecného formuláře pro vyhledávání vygenerovat seznam je
 co nás zajímají. Třeba podle signatury. Výsledný XML soubor zkonvertujeme 
 pomocí `prirtocsv`.
 
-Je třeba vytvořit tyto sloupce: `sysno,ck,signatura,nazev,autor,vydavatel,isbn,rok`
+Je třeba vytvořit tyto sloupce: `"ck,sysno,signatura,nazev,autor,isbn,vydavatel"`
 
 ### Scraping literatury ze SISu
 
@@ -33,3 +33,11 @@ JSON soubory s bibliografickými daty vytvoříme:
     
 Je třeba mít nainstalováno GNU Parallel a [Anystyle CLI](https://anystyle.io/).
 
+
+### Vytvoření TSV souboru 
+
+Vyhledávání rozpoznané literatury ze SISu v souboru z Alephu.
+
+    make isbn > data/isbn.tsv
+
+V první řadě vyhledává podle ISBN, ale pak také podle názvů a autorů z citací. Není to úplně 100% přesné, je třeba to ještě ručně zkontrolovat.
