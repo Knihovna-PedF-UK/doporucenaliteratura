@@ -45,6 +45,7 @@ local function match_isbn(x)
       return matched_isbn
     end
   end
+  return false
 end
 
 local function find_isbn(rec) 
@@ -85,21 +86,28 @@ local function process(filename, data)
   local isbns = data.isbn or {}
   for k,v in ipairs(data) do
     -- isbn was detected by anystyle
+    local found_isbn = false
     if v.isbn then
       for _, x in ipairs(v.isbn) do
-        update_isbn(x,v)
+        -- update only valid isbns
+        if match_isbn(x) then
+          update_isbn(x,v)
+          found_isbn = true
+        end
       end
     else
       -- try to find isbn in text
       local isbn =  find_isbn(v)
       if isbn then
         update_isbn(isbn,v)
-      else
-        -- make fake isbn, in order to keep all records
-        fake_isbn_count = fake_isbn_count + 1
-        local fake_isbn = "no_isbn_" .. fake_isbn_count
-        update_isbn(fake_isbn, v)
+        found_isbn = true
       end
+    end
+    if found_isbn == false then
+      -- make fake isbn, in order to keep all records
+      fake_isbn_count = fake_isbn_count + 1
+      local fake_isbn = "no_isbn_" .. fake_isbn_count
+      update_isbn(fake_isbn, v)
     end
   end
   return data
@@ -126,6 +134,20 @@ local function wrong_record(nazev, autor)
     return true 
   end
 end
+
+local find_names_cache = {}
+local function is_cached(nazev,autor)
+  -- don't lookup multiple times for the identical publication
+  local lookup_name = nazev .. autor
+  -- cleanup a bit
+  lookup_name = lookup_name:gsub("%s*", "")
+  if find_names_cache[lookup_name] then
+    return true
+  end
+  find_names_cache[lookup_name] = true
+  return false
+end
+
 -- find records by name and author
 local function find_names(orig_isbn)
   local rec = isbn_citations[orig_isbn] 
@@ -136,6 +158,7 @@ local function find_names(orig_isbn)
   if wrong_record(nazev, autor) then
     return nil 
   end
+  if is_cached(nazev, autor) then return nil end
   local nazev_ids = find_in_ngrams(ngram_nazev, nazev)
   local autor_ids = find_in_ngrams(ngram_author, autor)
   -- return sysno that is contained in first five names and also in authors
@@ -185,6 +208,8 @@ for i, x in ipairs(rec) do
   end
 end
 
+-- cache names and authors from sis, in order to prevent multiple lookups for the same record
+local sis_used = {}
 -- print found results
 local i = 0
 print("poradi", "isbn", "isbn aleph", "predmetu", "sysno", "signatura", "nazev", "nazev v citaci", "autor")
@@ -201,15 +226,22 @@ for isbn, count in pairs(isbn_data) do
     print(i, curr_isbn, rec.isbn , count, rec.sysno, rec.signatura,  rec.nazev, nazev_cit, rec.autor )
   else
     -- records that haven't been found in aleph
+    -- get the SIS record
     local rec = isbn_citations[orig_isbn] 
     local nazev = flatten_table(rec.title or {}) or ""
     local autor = get_authors(rec) or ""
-    local sysno = rec.sysno or ""
-    if orig_isbn:match("no_isbn") and wrong_record(nazev, autor)  then
-      -- don't print empty records
-    else
-      print(i, orig_isbn, "",  count, "", sysno,"",  nazev, autor)
+    -- don't lookup for the same publication multiple times
+    local lookup_name = nazev .. autor
+    lookup_name = lookup_name:gsub("%s", "")
+    if not sis_used[lookup_name] then
+      local sysno = rec.sysno or ""
+      if orig_isbn:match("no_isbn") and wrong_record(nazev, autor)  then
+        -- don't print empty records
+      else
+        print(i, orig_isbn, "",  count, "", sysno,"",  nazev, autor)
+      end
     end
+    sis_used[lookup_name] = true
   end
 end
 
